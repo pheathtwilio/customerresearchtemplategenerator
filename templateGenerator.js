@@ -124,12 +124,12 @@ const createDocument = (account) => {
   body.appendTable(accountTeamDetails)
 
   // Customer Details
-  let customerDetails = body.appendParagraph("Customer Details")
-  customerDetails.setHeading(DocumentApp.ParagraphHeading.HEADING1)
+  // let customerDetails = body.appendParagraph("Customer Details")
+  // customerDetails.setHeading(DocumentApp.ParagraphHeading.HEADING1)
 
-  // Financials
-  let financials = body.appendParagraph("Financials")
-  financials.setHeading(DocumentApp.ParagraphHeading.HEADING1)
+  // // Financials
+  // let financials = body.appendParagraph("Financials")
+  // financials.setHeading(DocumentApp.ParagraphHeading.HEADING1)
 
   // get contacts
   let contactsQuery = "select+Contact.CreatedDate,+Contact.Name,+Contact.Title,+Contact.Contact_Status__c+from+Contact+where+AccountId+=+'" + account.id +"'+and+Contact.Contact_Status__c+IN+(+'Developer',+'Opportunity',+'Open',+'Connected',+'Added',+'Engaged',+'Nurture'+)+order+by+Contact.CreatedDate+desc+limit+100"
@@ -166,7 +166,6 @@ const createDocument = (account) => {
 
   // get support tickets
   let supportTicketsQuery = "select+Customer_Support_Ticket__c.Ticket_ID__c,+Customer_Support_Ticket__c.CreatedDate,+Customer_Support_Ticket__c.Date_Solved__c,+Customer_Support_Ticket__c.Priority__c,+Customer_Support_Ticket__c.Ticket_Subject__c+from+Customer_Support_Ticket__c+where+Account__c='" + account.id + "'+order+by+Customer_Support_Ticket__c.CreatedDate+desc+limit+100"
-
 // +And+Customer_Support_Ticket__c!=’SCRUBBED’+order+by+Customer_Support_Ticket__c.CreatedDate+desc+limit+100
 
   let supportTickets = []
@@ -188,8 +187,6 @@ const createDocument = (account) => {
       let subject = data.records[i].Ticket_Subject__c
 
       let now = new Date()
-      // SpreadsheetApp.getUi().alert("NOW: " + now.getFullYear() + " THEN: " + createdDate.getFullYear() + " diff " + (now.getFullYear() - createdDate.getFullYear()))
-      
 
       // we only want tickets within a certain range
       if((now.getFullYear() - createdDate.getFullYear()) < 2){
@@ -264,10 +261,6 @@ const createDocument = (account) => {
     SpreadsheetApp.getUi().alert(e)
   }
 
-  // var options = {muteHttpExceptions: true}
-  // const bbbSearch = UrlFetchApp.fetch("https://www.google.com/search?q=bbb+" + "Three+Ships", options)
-
-
   // Better Business Bureau
   let bbb = body.appendParagraph("Better Business Bureau")
   bbb.setHeading(DocumentApp.ParagraphHeading.HEADING1)
@@ -286,9 +279,33 @@ const createDocument = (account) => {
   glassdoorSearch.setHeading(DocumentApp.ParagraphHeading.NORMAL)
   glassdoorSearch.setLinkUrl("https://www.google.com/search?q=glassdoor+" + account.name)
 
+  // News
+  let news = body.appendParagraph("News")
+  news.setHeading(DocumentApp.ParagraphHeading.HEADING1)
+  let subNews = body.appendParagraph("What has been in the news lately? any rounds of investment? Any layoffs? Anything of note?")
+  subNews.setHeading(DocumentApp.ParagraphHeading.NORMAL)
 
+  // Customer Experience
+  let customerExperience = body.appendParagraph("Customer Experience")
+  customerExperience.setHeading(DocumentApp.ParagraphHeading.HEADING1)
+  let subCustomerExperience = body.appendParagraph("This is an opportunity to do some mystery shopping. Does the customer have a public facing contact channel like chat, phone etc? Do they have an IVR tree, or an app? What is the customer experience like?")
+  subCustomerExperience.setHeading(DocumentApp.ParagraphHeading.NORMAL)
 
+  // Similar Customers
+  let similarCustomers = body.appendParagraph("Similar Customers")
+  similarCustomers.setHeading(DocumentApp.ParagraphHeading.HEADING1)
+  let subSimilarCustomers = body.appendParagraph("Are there similar customers that use Twilio? What type of use cases have they deployed?")
+  subSimilarCustomers.setHeading(DocumentApp.ParagraphHeading.NORMAL)
 
+  // Technology
+  let technology = body.appendParagraph("Technology")
+  technology.setHeading(DocumentApp.ParagraphHeading.HEADING1)
+  let subTechnology = body.appendParagraph("What is their technology stack?")
+  subTechnology.setHeading(DocumentApp.ParagraphHeading.NORMAL)
+  let twilio = body.appendParagraph("Twilio:")
+  twilio.setHeading(DocumentApp.ParagraphHeading.HEADING2)
+  let zoominfo = body.appendParagraph("Zoominfo:")
+  zoominfo.setHeading(DocumentApp.ParagraphHeading.HEADING2)
 
   // Analysis
   let analysis = body.appendParagraph("Analysis")
