@@ -1,31 +1,15 @@
 const ACCOUNT_SHEET = 'Account'
 const accountSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(ACCOUNT_SHEET)
 
-const GRANT_TYPE= "refresh_token"
-const CLIENT_ID =  PropertiesService.getScriptProperties().getProperty("CLIENT_ID")  
-const CLIENT_SECRET = PropertiesService.getScriptProperties().getProperty("CLIENT_SECRET")
-const REFRESH_TOKEN = PropertiesService.getScriptProperties().getProperty("REFRESH_TOKEN")
 const INSTANCE_URL = PropertiesService.getScriptProperties().getProperty("INSTANCE_URL")
 const QUERY_URL = PropertiesService.getScriptProperties().getProperty("QUERY_URL")
 
+const AUTH_TOKEN_URL=PropertiesService.getScriptProperties().getProperty("AUTH_TOKEN_URL")
 
 const _getAuthToken = () => {
 
-  let url = "https://test.salesforce.com/services/oauth2/token";
-  let response = ""
-  let options = {
-    method: 'POST',
-    payload: {
-      grant_type:GRANT_TYPE,
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      refresh_token: REFRESH_TOKEN
-    },
-    muteHttpExceptions: true
-  }
-
   try{
-    response = UrlFetchApp.fetch(url, options)
+    response = UrlFetchApp.fetch(AUTH_TOKEN_URL)
   }catch(e){
     SpreadsheetApp.getUi().alert("ERROR " + e)
   }
@@ -335,14 +319,3 @@ const createDocument = (account) => {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
