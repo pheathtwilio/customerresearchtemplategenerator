@@ -17,6 +17,15 @@ const _getAuthToken = () => {
   return JSON.parse(response).access_token
 }
 
+const _validateInput = (input) => {
+  
+  let regex = /^[A-Za-z]+$/
+  if(input.match(regex)){
+    return true
+  }
+  return false
+}
+
 const config = {
         headers: {
             "Authorization": "Bearer " + _getAuthToken()
@@ -36,6 +45,17 @@ const onFindAccounts = () => {
 
   let accountName = accountSheet.getRange(3, 3).getValue()
   let accountOwner = accountSheet.getRange(4, 3).getValue()
+
+  // validate accountName and accountOwner
+  if(!_validateInput(accountName)){
+    SpreadsheetApp.getUi().alert("Account Name must contain letters only no special characters or spaces")
+    return  
+  }
+
+  if(!_validateInput(accountOwner)){
+    SpreadsheetApp.getUi().alert("Account Owner must contain letters only no special characters or spaces")
+    return  
+  }
 
   let query = "select+Account.Id,+Account.Name,+Account.Account_Owner_Full_Name__c,+Account.Website+from+Account+where+Account_Owner_Full_Name__c+like+'%25" + accountOwner + "%25'+AND+Account.Name+like+'%25" + accountName +"%25'+limit+10"
   let response = ""
@@ -116,7 +136,7 @@ const createDocument = (account) => {
   // financials.setHeading(DocumentApp.ParagraphHeading.HEADING1)
 
   // get contacts
-  let contactsQuery = "select+Contact.CreatedDate,+Contact.Name,+Contact.Title,+Contact.Contact_Status__c+from+Contact+where+AccountId+=+'" + account.id +"'+and+Contact.Contact_Status__c+IN+(+'Developer',+'Opportunity',+'Open',+'Connected',+'Added',+'Engaged',+'Nurture'+)+order+by+Contact.CreatedDate+desc+limit+100"
+  let contactsQuery = "select+Contact.CreatedDate,+Contact.Name,+Contact.Title,+Contact.Contact_Status__c+from+Contact+where+AccountId+=+'" + account.id +"'+and+Contact.CreatedDate!=NULL+and+Contact.Name+!=+NULL+and+Contact.Title+!=+NULL+and+Contact.Contact_Status__c+IN+(+'Developer',+'Opportunity',+'Open',+'Connected',+'Added',+'Engaged',+'Nurture'+)+order+by+Contact.CreatedDate+desc+limit+100"
   let contacts = []
   
   // Set header for table
@@ -149,7 +169,11 @@ const createDocument = (account) => {
 
 
   // get support tickets
-  let supportTicketsQuery = "select+Customer_Support_Ticket__c.Ticket_ID__c,+Customer_Support_Ticket__c.CreatedDate,+Customer_Support_Ticket__c.Date_Solved__c,+Customer_Support_Ticket__c.Priority__c,+Customer_Support_Ticket__c.Ticket_Subject__c+from+Customer_Support_Ticket__c+where+Account__c='" + account.id + "'+order+by+Customer_Support_Ticket__c.CreatedDate+desc+limit+100"
+  let supportTicketsQuery = "select+Customer_Support_Ticket__c.Ticket_ID__c,+Customer_Support_Ticket__c.CreatedDate,+Customer_Support_Ticket__c.Date_Solved__c,+Customer_Support_Ticket__c.Priority__c,+Customer_Support_Ticket__c.Ticket_Subject__c+from+Customer_Support_Ticket__c+where+Account__c='" + account.id + "'+and+Customer_Support_Ticket__c.Ticket_ID__c!=NULL+and+Customer_Support_Ticket__c.CreatedDate!=NULL+and+Customer_Support_Ticket__c.Date_Solved__c!=NULL+and+Customer_Support_Ticket__c.Priority__c!=NULL+order+by+Customer_Support_Ticket__c.CreatedDate+desc+limit+100"
+  
+
+  // +and+Customer_Support_Ticket__c.Ticket_Subject__c!=NULL
+  // +order+by+Customer_Support_Ticket__c.CreatedDate+desc+limit+100"
 // +And+Customer_Support_Ticket__c!=’SCRUBBED’+order+by+Customer_Support_Ticket__c.CreatedDate+desc+limit+100
 
   let supportTickets = []
@@ -191,7 +215,8 @@ const createDocument = (account) => {
   }
 
   // get opportunities 
-  let opportunitiesQuery = "select+Opportunity.StageName,+Opportunity.Opportunity_Name_First_80_Characters__c,+Opportunity.eARR_post_Launch__c,+Opportunity.CloseDate+from+Opportunity+where+AccountId='" + account.id + "'+order+by+Opportunity.CloseDate+desc+limit+100"
+  let opportunitiesQuery = "select+Opportunity.StageName,+Opportunity.Opportunity_Name_First_80_Characters__c,+Opportunity.eARR_post_Launch__c,+Opportunity.CloseDate+from+Opportunity+where+AccountId='" + account.id + "'+and+Opportunity.StageName!=NULL+and+Opportunity.Opportunity_Name_First_80_Characters__c!=NULL+and+Opportunity.eARR_post_Launch__c!=NULL+and+Opportunity.CloseDate!=NULL+order+by+Opportunity.CloseDate+desc+limit+100"
+
   let lostOpportunities = []
   let wonOpportunities = []
   let openOpportunities = []
